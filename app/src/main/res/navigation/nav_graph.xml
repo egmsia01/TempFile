@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/FirstFragment"
-        android:name="com.gmerge.tempfile.FirstFragment"
+        android:name="com.gmerge.tempfile.MainFragment"
         android:label="@string/first_fragment_label"
         tools:layout="@layout/fragment_first">
 

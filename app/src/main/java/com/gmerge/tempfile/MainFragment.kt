@@ -13,7 +13,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import com.gmerge.tempfile.databinding.FragmentFirstBinding
 
-class FirstFragment : Fragment() {
+class MainFragment : Fragment() {
 
     private var _binding: FragmentFirstBinding? = null
     private val binding get() = _binding!!
