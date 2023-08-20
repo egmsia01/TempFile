@@ -19,7 +19,7 @@ class MainFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var windowView: View? = null
-    private var windowManager: WindowManager? = null
+    private var windowManager: WindowManager? = null 
     private var isWindowVisible = false
     private var initialX = 0
     private var initialY = 0
