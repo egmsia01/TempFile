@@ -5,12 +5,15 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.PixelFormat
 import android.os.Bundle
+import android.view.DragEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.ImageView
+import android.widget.TextView
 import com.gmerge.tempfile.databinding.FragmentFirstBinding
 
 class MainFragment : Fragment() {
@@ -19,7 +22,7 @@ class MainFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var windowView: View? = null
-    private var windowManager: WindowManager? = null 
+    private var windowManager: WindowManager? = null
     private var isWindowVisible = false
     private var initialX = 0
     private var initialY = 0
@@ -55,8 +58,7 @@ class MainFragment : Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     private fun showFloatingWindow() {
         if (windowView == null) {
-            windowView =
-                LayoutInflater.from(requireContext()).inflate(R.layout.layout_floating_window, null)
+            windowView = LayoutInflater.from(requireContext()).inflate(R.layout.layout_floating_window, null)
         }
 
         val screenWidth = Resources.getSystem().displayMetrics.widthPixels
@@ -97,12 +99,33 @@ class MainFragment : Fragment() {
             true
         }
 
-        windowView?.setOnClickListener {
+        windowView?.setOnDragListener { v, event ->
+            when (event?.action) {
+                DragEvent.ACTION_DROP -> {
+                    val item = event.clipData.getItemAt(0)
+                    val dragData = item.text?.toString() ?: ""
 
+                    val textView = windowView?.findViewById<TextView>(R.id.textView)
+                    val imageView = windowView?.findViewById<ImageView>(R.id.imageView)
+
+                    // 判断拖拽的数据类型
+                    if (item.uri != null && item.uri.toString().startsWith("content://")) {
+                        // 处理图片的URI，显示在 ImageView 中
+                        imageView?.setImageURI(item.uri)
+                        textView?.text = "" // 清空文本
+                    } else {
+                        // 显示拖拽的文本数据
+                        textView?.text = dragData
+                        imageView?.setImageDrawable(null) // 清空图片
+                    }
+                }
+            }
+            true
         }
 
         isWindowVisible = true
     }
+
 
     private fun hideFloatingWindow() {
         windowManager?.removeView(windowView)
