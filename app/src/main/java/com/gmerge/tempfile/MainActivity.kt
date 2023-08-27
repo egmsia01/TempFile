@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "InflateParams")
     private fun showFloatingWindow() {
         if (windowView == null) {
             windowView =
@@ -61,7 +61,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         val screenWidth = Resources.getSystem().displayMetrics.widthPixels
-        val screenHeight = Resources.getSystem().displayMetrics.heightPixels
 
         val params = WindowManager.LayoutParams(
             300, 200,
@@ -98,7 +97,7 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        windowView?.setOnDragListener { v, event ->
+        windowView?.setOnDragListener { _, event ->
             when (event?.action) {
                 DragEvent.ACTION_DROP -> {
                     val item = event.clipData.getItemAt(0)
@@ -142,19 +141,19 @@ class MainActivity : AppCompatActivity() {
     private fun handleIntent(intent: Intent?) {
         if (intent?.action == Intent.ACTION_SEND) {
             if ("text/plain" == intent.type) {
-                handleSharedText(intent)
+                handleSharedText()
             } else if (intent.type?.startsWith("image/") == true) {
-                handleSharedImage(intent)
+                handleSharedImage()
             }
         }
     }
 
-    private fun handleSharedText(intent: Intent) {
+    private fun handleSharedText() {
         // 处理文本
         Log.d("handleSharedText", "handleSharedText: ")
     }
 
-    private fun handleSharedImage(intent: Intent) {
+    private fun handleSharedImage() {
         // 处理图片
         Log.d("handleSharedImage", "handleSharedImage: ")
     }
