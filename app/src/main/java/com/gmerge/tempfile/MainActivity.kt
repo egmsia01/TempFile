@@ -2,9 +2,11 @@ package com.gmerge.tempfile
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.PixelFormat
 import android.os.Bundle
+import android.util.Log
 import android.view.DragEvent
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
@@ -33,6 +35,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        handleIntent(intent)
+
         context = this@MainActivity
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -128,6 +132,31 @@ class MainActivity : AppCompatActivity() {
         windowView = null
         windowManager = null
         isWindowVisible = false
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        if (intent?.action == Intent.ACTION_SEND) {
+            if ("text/plain" == intent.type) {
+                handleSharedText(intent)
+            } else if (intent.type?.startsWith("image/") == true) {
+                handleSharedImage(intent)
+            }
+        }
+    }
+
+    private fun handleSharedText(intent: Intent) {
+        // 处理文本
+        Log.d("handleSharedText", "handleSharedText: ")
+    }
+
+    private fun handleSharedImage(intent: Intent) {
+        // 处理图片
+        Log.d("handleSharedImage", "handleSharedImage: ")
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
