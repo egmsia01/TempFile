@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.res.Resources
 import android.graphics.PixelFormat
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.DragEvent
 import android.view.LayoutInflater
@@ -32,6 +33,8 @@ class MainActivity : AppCompatActivity() {
     private var initialY = 0
     private var initialTouchX = 0
     private var initialTouchY = 0
+    private val textView = windowView?.findViewById<TextView>(R.id.textView)
+    private val imageView = windowView?.findViewById<ImageView>(R.id.imageView)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +44,8 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
 
         setSupportActionBar(binding.toolbar)
         // 初始化、设置点击监听
@@ -55,6 +60,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("ClickableViewAccessibility", "InflateParams")
     private fun showFloatingWindow() {
+
         if (windowView == null) {
             windowView =
                 LayoutInflater.from(context).inflate(R.layout.layout_floating_window, null)
@@ -103,9 +109,6 @@ class MainActivity : AppCompatActivity() {
                     val item = event.clipData.getItemAt(0)
                     val dragData = item.text?.toString() ?: ""
 
-                    val textView = windowView?.findViewById<TextView>(R.id.textView)
-                    val imageView = windowView?.findViewById<ImageView>(R.id.imageView)
-
                     // 判断拖拽的数据类型
                     if (item.uri != null && item.uri.toString().startsWith("content://")) {
                         // 处理图片的URI，显示在 ImageView 中
@@ -150,12 +153,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleSharedText() {
         // 处理文本
-        Log.d("handleSharedText", "handleSharedText: ")
+        Log.d("handleSharedText", "handleSharedText")
+        val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
+        textView?.text = sharedText
     }
 
     private fun handleSharedImage() {
         // 处理图片
-        Log.d("handleSharedImage", "handleSharedImage: ")
+        Log.d("handleSharedImage", "handleSharedImage")
+        val imageUri = intent.data
+        val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
+        imageView?.setImageBitmap(bitmap)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
