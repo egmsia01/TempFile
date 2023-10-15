@@ -1,12 +1,12 @@
 package com.gmerge.tempfile
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.PixelFormat
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
@@ -22,6 +22,8 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import com.gmerge.tempfile.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -39,20 +41,26 @@ class MainActivity : AppCompatActivity() {
     private val textView = windowView?.findViewById<TextView>(R.id.textView)
     private val imageView = windowView?.findViewById<ImageView>(R.id.imageView)
 
-    // 定义一个权限请求码
-    private val REQUEST_OVERLAY_PERMISSION = 1234
+    private val overlayPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                if (checkOverlayPermission()) {
+                    showFloatingWindow()
+                } else {
+                    Toast.makeText(this, "请授予悬浮窗权限！", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         handleIntent(intent)
 
-        context = this@MainActivity
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
-        // 初始化、设置点击监听
+
         binding.buttonStart.setOnClickListener {
             if (!isWindowVisible) {
                 if (checkOverlayPermission()) {
@@ -68,28 +76,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkOverlayPermission(): Boolean {
         return Settings.canDrawOverlays(this)
-        return true
     }
 
     private fun requestOverlayPermission() {
         val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
             Uri.parse("package:$packageName"))
-        startActivityForResult(intent, REQUEST_OVERLAY_PERMISSION)
+        overlayPermissionLauncher.launch(intent)
     }
-
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_OVERLAY_PERMISSION) {
-            if (checkOverlayPermission()) {
-                // 用户授予了悬浮窗权限，可以执行相应的操作
-                showFloatingWindow()
-            } else {
-                // 用户未授予悬浮窗权限
-            }
-        }
-    }
-
 
     @SuppressLint("ClickableViewAccessibility", "InflateParams")
     private fun showFloatingWindow() {
